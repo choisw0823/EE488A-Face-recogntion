@@ -82,6 +82,18 @@ def compute_eer(all_labels,all_scores):
 
     # calculate equal error rate (EER). The EER is the error rate at which FNR is equal to FPR.
     # (put your code here) 
+    
+    fpr, tpr, thresholds = roc_curve(all_labels, all_scores)
+
+    # Calculate FNR = 1 - TPR
+    fnr = 1 - tpr
+
+    # Find the threshold where FNR equals FPR
+    eer_threshold = thresholds[numpy.nanargmin(numpy.absolute((fnr - fpr)))]
+
+    # EER is FNR (or FPR) at that threshold
+    EER = fnr[numpy.nanargmin(numpy.absolute((fnr - fpr)))]
+
 
     return EER
 
@@ -108,11 +120,26 @@ def main_worker(args):
 
     ep          = 1
 
-    ## Input transformations for training
-    train_transform = # (put your code here) 
+    train_transform = transforms.Compose([
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+    transforms.RandomGrayscale(p=0.1),
+    transforms.RandomAffine(degrees=10, translate=(0.1, 0.1), scale=(0.9, 1.1)),
 
+    # Simulating low resolution
+    transforms.Resize((150, 150)),  # Resize to a smaller size
+    transforms.Resize((300, 300)),  # Resize back to the original size
+
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    
     ## Input transformations for evaluation
-    test_transform = # (put your code here) 
+    test_transform = transforms.Compose([
+    transforms.Resize((300, 300)),  # Resize to the input size of the model
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
 
     ## Initialise trainer and data loader
     trainLoader = get_data_loader(transform=train_transform, **vars(args));
