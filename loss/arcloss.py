@@ -2,16 +2,20 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class ArcFaceLoss(nn.Module):
-    def __init__(self, s=64.0, m=0.50, easy_margin=False):
-        super(ArcFaceLoss, self).__init__()
+class LossFunction(nn.Module):
+    def __init__(self, s=64.0, m=0.50, easy_margin=False, **kwargs):
+        super(LossFunction, self).__init__()
         self.s = s
         self.m = m
         self.easy_margin = easy_margin
-        self.cos_m = torch.cos(m)
-        self.sin_m = torch.sin(m)
-        self.th = torch.cos(torch.pi - m)
-        self.mm = torch.sin(torch.pi - m) * m
+
+        # Convert m to a tensor before applying torch.cos and torch.sin
+        m_tensor = torch.tensor(m, dtype=torch.float32)
+
+        self.cos_m = torch.cos(m_tensor)
+        self.sin_m = torch.sin(m_tensor)
+        self.th = torch.cos(torch.pi - m_tensor)
+        self.mm = torch.sin(torch.pi - m_tensor) * m_tensor
 
     def forward(self, cosine, label):
         sine = torch.sqrt((1.0 - torch.pow(cosine, 2)).clamp(0, 1))

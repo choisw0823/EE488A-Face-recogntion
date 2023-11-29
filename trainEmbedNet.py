@@ -128,7 +128,7 @@ def main_worker(args):
 
     # Simulating low resolution
     transforms.Resize((150, 150)),  # Resize to a smaller size
-    transforms.Resize((300, 300)),  # Resize back to the original size
+    transforms.Resize((256, 256)),  # Resize back to the original size
 
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -136,7 +136,7 @@ def main_worker(args):
     
     ## Input transformations for evaluation
     test_transform = transforms.Compose([
-    transforms.Resize((300, 300)),  # Resize to the input size of the model
+    transforms.Resize((256, 256)),  # Resize to the input size of the model
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
