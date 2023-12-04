@@ -11,7 +11,6 @@ class LossFunction(nn.Module):
 
     def __init__(self, hard_rank=0, hard_prob=0, margin=0, **kwargs):
         super(LossFunction, self).__init__()
-
         self.test_normalize = True
         
         self.hard_rank  = hard_rank
